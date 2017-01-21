@@ -1,0 +1,4 @@
+harmonic: 15.403683
+harmonic_bunch 50: 18.623657
+harmonic_bunch 100: 19.314896
+harmonic_bunch 500: 20.925121
