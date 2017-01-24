@@ -1,12 +1,12 @@
-CFLAGS = -g -Wall -Wextra -pedantic
+CFLAGS = -g -Wall -Wextra -pedantic -std=c99
 
 all: main
 
 clean: 
-	rm main *.o
+	rm bin/* *.o
 
 main: main.o exp_funs.o
-	gcc $(CFLAGS) -o main main.o harmonic.o
+	gcc $(CFLAGS) -o bin/main main.o exp_funs.o -lm
 
 exp_funs.o: exp_funs.c exp_funs.h
 	gcc $(CFLAGS) -c exp_funs.c
