@@ -3,7 +3,7 @@ CFLAGS = -g -Wall -Wextra -pedantic -std=c99
 all: main
 
 clean: 
-	rm main *.o bin/*
+	rm *.o bin/*
 
 main: main.o harmonic.o
 	gcc $(CFLAGS) -o bin/main main.o harmonic.o
