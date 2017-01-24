@@ -5,9 +5,8 @@ void exp_funs(double x){
     double a = (exp(x)-1)/x;
     double b = (exp(x)-exp(-x))/(2*x);
 
-     printf("%.6f\t%.6f\t%.6f\n", x, a, b);
-//    printf("a) f1(%.6f)=%.6f\n", x, a);
-//    printf("b) f2(%.6f)=%.6f\n", x, b);
+    printf("a) f1(%.6f)=%.6f\n", x, a);
+    printf("b) f2(%.6f)=%.6f\n", x, b);
 }
 
 void exp_funs_Taylor(double x){
@@ -37,7 +36,6 @@ void exp_funs_Taylor(double x){
 
     b = b;
 
-     printf("%.6f\t%.6f\t%.6f\n", x, a, b);
-//    printf("a) f1(%.6f)=%.6f\n", x, a);
-//    printf("b) f2(%.6f)=%.6f\n", x, b);
+    printf("a) f1(%.6f)=%.6f\n", x, a);
+    printf("b) f2(%.6f)=%.6f\n", x, b);
 }
