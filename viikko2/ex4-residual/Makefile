@@ -1,15 +1,16 @@
-CFLAGS = -g -Wall -Wextra -pedantic -std=c99
+CFLAGS = -g -Wall -Wextra -pedantic -std=c89
 
 all: main
 
 clean: 
 	rm *.o bin/*
 
-main: main.o harmonic_kahan.o
-	gcc $(CFLAGS) -o bin/main main.o harmonic_kahan.o
+main: main.o residual.o
+	gcc $(CFLAGS) -o bin/main main.o residual.o -lm -llapack -lblas
 
-harmonic.o: harmonic_kahan.c harmonic_kahan.h
-	gcc $(CFLAGS) -c harmonic_kahan.c
+residual.o: residual.c residual.h
+	gcc $(CFLAGS) -lm -llapack -lblas -c residual.c 
 
-main.o: main.c
+main.o: main.c lapac.h
 	gcc $(CFLAGS) -c main.c
+
