@@ -4,25 +4,29 @@
 #include "lapac.h"
 
 int main(){
-	double *A = (double*) malloc((size_t) 4*4*sizeof(double));
-	double *B = (double*) malloc((size_t) 1*4*sizeof(double));
-	double *C = (double*) malloc((size_t) 1*4*sizeof(double));
 
-	int i;
-	for (i=0; i<4*4; i++){
-		A[i] = i;
-	}
+	int N, i, j, M;
+	double *A, *B, *C;
 
-	for (i=0; i<4; i++){
-		B[i] = 8.0-i;
-	}
 
-	
-	for (i=0; i<4; i++){
-		C[i] = 1.0+i;
-	}
+	scanf("%d",&N);
+	scanf("%d",&M);
 
-	printf("\n%f\n", residual(4, A, B, C, 3));
-	
+	A = (double*) malloc((size_t) N*N*sizeof(double));
+	B = (double*) malloc((size_t) 1*N*sizeof(double));
+	C = (double*) malloc((size_t) 1*N*sizeof(double));
+
+	/* reading A */
+	for (i=0;i<N;i++) for (j=0;j<N;j++) scanf("%lg",&A[j*N+i]);
+
+	/* reading B (corresponds to x */
+	for (i=0;i<N;i++) scanf("%lg",&B[+i]);
+
+	/* reading C (corresponds to b */
+	for (i=0;i<N;i++) scanf("%lg",&C[+i]);
+
+
+	printf("%f\n", residual(N, A, B, C, M));
+
 	return 1;
 }
