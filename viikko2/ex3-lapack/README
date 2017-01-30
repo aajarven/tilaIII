@@ -1,0 +1,14 @@
+
+Programs to solve a linear system using LAPACAK routine 'dgesv'.
+The equation is read in from stdin in format:
+N
+A (N lines with N numbers on each)
+b (the RHS of the equation)
+
+E.g. for a system of size 3 the input might be:
+3
+0.60379247919382  0.27218792496996  0.19881426776106
+0.74678567656443  0.44509643228795  0.93181457846166
+0.41864946772751  0.84622141782432  0.52515249630517
+0.42889236534100  0.30461736686939  0.18965374754717
+
