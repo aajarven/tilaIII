@@ -8,7 +8,7 @@ int main(){
 	int N, i, j, M;
 	double *A, *B, *C;
 
-
+        /* read N and M */
 	scanf("%d",&N);
 	scanf("%d",&M);
 
@@ -19,14 +19,13 @@ int main(){
 	/* reading A */
 	for (i=0;i<N;i++) for (j=0;j<N;j++) scanf("%lg",&A[j*N+i]);
 
-	/* reading B (corresponds to x */
-	for (i=0;i<N;i++) scanf("%lg",&B[+i]);
-
 	/* reading C (corresponds to b */
 	for (i=0;i<N;i++) scanf("%lg",&C[+i]);
+	
+        /* reading B (corresponds to x */
+	for (i=0;i<N;i++) scanf("%lg",&B[+i]);
 
 
 	printf("%f\n", residual(N, A, B, C, M));
-
 	return 1;
 }
