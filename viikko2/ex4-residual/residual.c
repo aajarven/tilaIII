@@ -22,30 +22,18 @@ double residual(int N, double *A, double *x, double *b, int m){
 
     /* product Ax */
     dgemm_(&TRANS, &NOTRANS, &M, &NN, &K, &alpha, A, &LDA, x, &LDB, &beta, C, &LDC);
-
-    printf("Ax:\n");
-    for (i=0; i<N; i++){
-        printf("%f\t", C[i]);
-        printf("\n");
-    }
     
     /* Ax-b */
     for (i=0; i<N; i++){
         C[i] = C[i]-b[i];
     }
 
-    printf("Ax-b:\n");
-    for (i=0; i<N; i++){
-        printf("%f\t", C[i]);
-        printf("\n");
-    }
-    
     /* residual */
     if (m==0){
-        double biggest = C[0];
+        double biggest = fabs(C[0]);
 
         for (i=0; i<N; i++){
-            biggest = C[i] > biggest ? C[i] : biggest;
+            biggest = fabs(C[i]) > biggest ? fabs(C[i]) : biggest;
         }
 
         return biggest;
@@ -54,7 +42,7 @@ double residual(int N, double *A, double *x, double *b, int m){
         double sum = 0;
 
         for (i=0; i<N; i++){
-            sum += pow(C[i], (double) m);
+            sum += pow(fabs(C[i]), (double) m);
         }
 
         return pow(sum, 1.0/m);

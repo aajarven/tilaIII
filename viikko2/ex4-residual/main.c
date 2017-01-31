@@ -25,27 +25,6 @@ int main(){
     /* reading B (corresponds to x */
     for (i=0;i<N;i++) scanf("%lg",&B[i]);
 
-    printf("A:\n");
-    for (i=0; i<N; i++){
-        for (j=0; j<N; j++){
-            printf("%f\t", A[i*N+j]);
-        }
-        printf("\n");
-    }
-
-    printf("x:\n");
-    for (i=0; i<N; i++){
-        printf("%f\t", B[i]);
-        printf("\n");
-    }
-
-
-    printf("b:\n");
-    for (i=0; i<N; i++){
-        printf("%f\t", C[i]);
-        printf("\n");
-    }
-
     printf("%e\n", residual(N, A, B, C, M));
     return 1;
 }
