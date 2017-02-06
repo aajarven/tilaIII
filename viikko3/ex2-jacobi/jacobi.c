@@ -28,8 +28,9 @@ double* jacobi(double *Q, int N){
         }
     }
 
-    // S_1
+    // S_1 & S_1t
     double *S1 = malloc(N*N*sizeof(double));
+    double *S1t = malloc(N*N*sizeof(double));
 
     // find biggest off diagonal value
     struct matrixIndex biggest = biggestOffDiag(D);
@@ -46,10 +47,47 @@ double* jacobi(double *Q, int N){
         theta = 0.5*atan(2*D[biggest.i][biggest.j]/D[biggest.i][biggest.i]-D[biggest.j][biggest.j]);
     }
 
-    // compute S_1
+    // compute S_1 (and its transpose)
     for (int i=0; i<N; i++){
         for (int j=0; j<N; j++){
-            // wat
+            if (i==j){
+                S1[i][j] = 1;
+                S1t[i][j] = 1;
+            } else {
+                S1[i][j] = 0;
+                S1t[i][j] = 0;
+            }
+        }
+    }
+    S1[biggest.i][biggest.i] = cos(theta);
+    S1[biggest.j][biggest.j] = S1[biggest.i][biggest.i];
+    S1[biggest.j][biggest.i] = sin(theta);
+    S1[biggest.i][biggset.j] = -S1[biggest.j][biggest.i];
+    S1t[biggest.i][biggest.i]=S1[biggest.i][biggest.i];
+    S1t[biggest.j][biggest.j]=S1[biggest.j][biggest.j];
+    S1t[biggest.i][biggest.j]=S1[biggest.j][biggest.i];
+    S1t[biggest.j][biggest.i]=S1[biggest.i][biggest.j];
+
+    // matrix for doing multiplication S1t*D*S1
+    double *tmp = malloc(N*N*sizeof(double));
+
+    // S1t*D
+    for (int i=0; i<N; i++){
+        for (int j=0; j<N; j++){
+            tmp[i][j] = 0;
+            for (int k=0; k<N; k++){
+                tmp[i][j] += S1t[i][k]*D[k][j];
+            }
+        }
+    }
+
+    // D*S1
+    for (int i=0; i<N; i++){
+        for (int j=0; j<N; j++){
+            D[i][j] = 0;
+            for (int k=0; k<N; k++){
+                D[i][j] += tmp[i][k]*S1[k][j];
+            }
         }
     }
 
