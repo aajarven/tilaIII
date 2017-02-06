@@ -1,5 +1,9 @@
 #include <math.h>
-
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "jacobi.h"
 
 struct matrixIndex{
     int i;
@@ -9,9 +13,12 @@ struct matrixIndex{
 
 /**
  * Jacobi method as presented in http://www.cmi.ac.in/~ksutar/NLA2013/iterativemethods.pdf
-**/
+ **/
 
 double* jacobi(double *Q, int N){
+    double PI = acos(-1.0);
+    double threshold = 1e-4; // how close to zero should non-diagonal elements be
+
     // copy of Q
     double *D = malloc(N*N*sizeof(double));
     memcpy(D, Q, N*N*sizeof(double));
@@ -21,9 +28,9 @@ double* jacobi(double *Q, int N){
     for (int i=0; i<N; i++){
         for (int j=0; j<N; j++){
             if (i==j){
-                S[i][j] = 1;
+                S[i*N+j] = 1;
             } else {
-                S[i][j] = 0;
+                S[i*N+j] = 0;
             }
         }
     }
@@ -32,81 +39,117 @@ double* jacobi(double *Q, int N){
     double *S1 = malloc(N*N*sizeof(double));
     double *S1t = malloc(N*N*sizeof(double));
 
-    // find biggest off diagonal value
-    struct matrixIndex biggest = biggestOffDiag(D);
+    bool diagonal = false;
+    do{
+        // find biggest off diagonal value
+        struct matrixIndex biggest = biggestOffDiag(D, N);
 
-    // finding the rotational angle
-    double theta;
-    if (D[biggest.i][biggest.i] == D[biggest.j][biggest.j]){
-        if (D[biggest.i][biggest.j] > 0){
-            theta = PI/2;
-        } else {
-            theta = -PI/2;
-        }
-    } else {
-        theta = 0.5*atan(2*D[biggest.i][biggest.j]/D[biggest.i][biggest.i]-D[biggest.j][biggest.j]);
-    }
-
-    // compute S_1 (and its transpose)
-    for (int i=0; i<N; i++){
-        for (int j=0; j<N; j++){
-            if (i==j){
-                S1[i][j] = 1;
-                S1t[i][j] = 1;
+        // finding the rotational angle
+        double theta;
+        if (D[biggest.i*N+biggest.i] == D[biggest.j*N+biggest.j]){
+            if (D[biggest.i*N+biggest.j] > 0){
+                theta = PI/2;
             } else {
-                S1[i][j] = 0;
-                S1t[i][j] = 0;
+                theta = -PI/2;
+            }
+        } else {
+            theta = 0.5*atan(2*D[biggest.i*N+biggest.j]/(D[biggest.i*N+biggest.i]-D[biggest.j*N+biggest.j]));
+        }
+
+        // compute S_1 (and its transpose)
+        for (int i=0; i<N; i++){
+            for (int j=0; j<N; j++){
+                if (i==j){
+                    S1[i*N+j] = 1;
+                    S1t[i*N+j] = 1;
+                } else {
+                    S1[i*N+j] = 0;
+                    S1t[i*N+j] = 0;
+                }
             }
         }
-    }
-    S1[biggest.i][biggest.i] = cos(theta);
-    S1[biggest.j][biggest.j] = S1[biggest.i][biggest.i];
-    S1[biggest.j][biggest.i] = sin(theta);
-    S1[biggest.i][biggset.j] = -S1[biggest.j][biggest.i];
-    S1t[biggest.i][biggest.i]=S1[biggest.i][biggest.i];
-    S1t[biggest.j][biggest.j]=S1[biggest.j][biggest.j];
-    S1t[biggest.i][biggest.j]=S1[biggest.j][biggest.i];
-    S1t[biggest.j][biggest.i]=S1[biggest.i][biggest.j];
+        S1[biggest.i*N+biggest.i] = cos(theta);
+        S1[biggest.j*N+biggest.j] = S1[biggest.i*N+biggest.i];
+        S1[biggest.j*N+biggest.i] = sin(theta);
+        S1[biggest.i*N+biggest.j] = -S1[biggest.j*N+biggest.i];
+        S1t[biggest.i*N+biggest.i]=S1[biggest.i*N+biggest.i];
+        S1t[biggest.j*N+biggest.j]=S1[biggest.j*N+biggest.j];
+        S1t[biggest.i*N+biggest.j]=S1[biggest.j*N+biggest.i];
+        S1t[biggest.j*N+biggest.i]=S1[biggest.i*N+biggest.j];
 
-    // matrix for doing multiplication S1t*D*S1
-    double *tmp = malloc(N*N*sizeof(double));
+        // matrix for doing multiplication S1t*D*S1
+        double *tmp = malloc(N*N*sizeof(double));
 
-    // S1t*D
+        // S1t*D
+        for (int i=0; i<N; i++){
+            for (int j=0; j<N; j++){
+                tmp[i*N+j] = 0;
+                for (int k=0; k<N; k++){
+                    tmp[i*N+j] += S1t[i*N+k]*D[k*N+j];
+                }
+            }
+        }
+
+        // *S1
+        for (int i=0; i<N; i++){
+            for (int j=0; j<N; j++){
+                D[i*N+j] = 0;
+                for (int k=0; k<N; k++){
+                    D[i*N+j] += tmp[i*N+k]*S1[k*N+j];
+                }
+            }
+        }
+
+        // S*S1
+        for (int i=0; i<N; i++){
+            for (int j=0; j<N; j++){
+                tmp[i*N+j] = 0;
+                for (int k=0; k<N; k++){
+                    tmp[i*N+j] += S[i*N+j]*S1[i*N+j];
+                }
+            }
+        }
+
+        // check diagonality
+        diagonal = true;
+        for (int i=0; i<N; i++){
+            for (int j=0; j<N; j++){
+                if (i != j && fabs(D[i*N+j]) > threshold){
+                    diagonal = false;
+                }
+            }
+        }
+    
+        free(tmp);
+
+    } while (!diagonal);
+
+    double *eigenvalues = malloc(N*sizeof(double));
     for (int i=0; i<N; i++){
-        for (int j=0; j<N; j++){
-            tmp[i][j] = 0;
-            for (int k=0; k<N; k++){
-                tmp[i][j] += S1t[i][k]*D[k][j];
-            }
-        }
+        eigenvalues[i] = D[i*N+i];
     }
 
-    // D*S1
-    for (int i=0; i<N; i++){
-        for (int j=0; j<N; j++){
-            D[i][j] = 0;
-            for (int k=0; k<N; k++){
-                D[i][j] += tmp[i][k]*S1[k][j];
-            }
-        }
-    }
+    free(S);
+    free(S1);
+    free(S1t);
+    free(D);
+
+    return eigenvalues;
 
 }
 
 struct matrixIndex biggestOffDiag(double *matrix, int size){
 
-    struct matrixIndex = {0, 0};
+    struct matrixIndex ret = {0, 1};
 
     for (int i=0; i<size; i++){
         for (int j=0; j<size; j++){
-            if (fabs(matrix[i][j]) > fabs(matrix[matrixIndex.i][matrixIndex.j])){
-                matrixIndex.i = i;
-                matrixIndex.j = j;
+            if (i != j && fabs(matrix[i*size+j]) > fabs(matrix[ret.i*size+ret.j])){
+                ret.i = i;
+                ret.j = j;
             }
         }
     }
 
-    return matrixIndex;
-
-
-
+    return ret;
+}
