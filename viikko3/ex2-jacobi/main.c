@@ -5,23 +5,12 @@
 
 int main(){
     int size = 4;
-    double *mat = malloc(size*size*sizeof(double));
-    mat[0] = 4;
-    mat[1] = -30;
-    mat[2] = 60;
-    mat[3] = -35;
-    mat[4] = -30;
-    mat[5] = 300;
-    mat[6] = -675;
-    mat[7] = 420;
-    mat[8] = 60;
-    mat[9] = -675;
-    mat[10]= 1620;
-    mat[11]= -1050;
-    mat[12]= -35;
-    mat[13]= 420;
-    mat[14]= -1050;
-    mat[15]= 700;
+    double mat[4*4] = {
+        4, 30, 432, -543,
+        30, 300, -675, 420,
+        432, -675, 1620, -1050,
+        -543, 420, -1050, 700
+    };
 
 
     double *eigenvalues = jacobi(mat, size);
