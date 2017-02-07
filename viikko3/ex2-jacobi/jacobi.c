@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "jacobi.h"
 
 struct matrixIndex{
@@ -137,6 +138,37 @@ double* jacobi(double *Q, int N){
     return eigenvalues;
 
 }
+
+double err_propag(int N, double dq){
+    double *M = malloc(N*N*sizeof(double));
+
+    // fill with random numbers
+    srand(time(0));
+    for (int i=0; i<N; i++){
+        for (int j=i; j<N; j++){
+            M[i*N+j] = rand()/RAND_MAX;
+            M[j*N+i] = M[i*N+j];
+        }
+    }
+
+    double *eigen1 = jacobi(M, N);
+
+    //perturb and recalculate
+    int x = rand() % (N*N);
+    M[x] = M[x]*dq;
+
+    double *eigen2 = jacobi(M, N);
+
+    double eigennorm = 0;
+    double errornorm = 0;
+    for (int i=0; i<N; i++){
+        eigennorm += eigen1[i] * eigen1[i];
+        errornorm += (eigen2[i]-eigen1[i]);
+    }
+
+    return pow(errornorm, 0.5)/(pow(eigennorm, 0.5)*dq);
+}
+
 
 struct matrixIndex biggestOffDiag(double *matrix, int size){
 
