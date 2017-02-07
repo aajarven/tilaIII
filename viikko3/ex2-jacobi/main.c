@@ -17,7 +17,7 @@ int main(){
     double *eigenvalues = jacobi(mat, size);
     printf("jacobi method:\n");
     for (int i=0; i<size; i++){
-        printf("%f\t", eigenvalues[i]);
+        printf("%25.18f\t", eigenvalues[i]);
         if (i%size== size){
             printf("\n");
         }
@@ -41,7 +41,7 @@ int main(){
     // print eigenvalues
     printf("\nLAPACK implementation:\n");
     for (int i=0; i<size; i++){
-        printf("%f\t", WR[i]);
+        printf("%25.18f\t", WR[i]);
         if (i%size== size){
             printf("\n");
         }
@@ -51,9 +51,9 @@ int main(){
     
 //    printf("N\tdq\tf\n");
 //    srand(time(NULL));
-//    for (int i=0; i<150; i++){
-//        int size = 5+(rand()%10); // random number from 5-14
+//    for (int i=0; i<100; i++){
+//        int size = 5+(rand()%11); // random number from 5-15
 //        double dq = ((double) rand())/(RAND_MAX+1.0)/10;
-//        printf("%d\t%f\t%f\n", size, dq, err_propag(size, dq));
+//        printf("%d\t%f\t%25.18f\n", size, dq, err_propag(size, dq));
 //    }
 }

@@ -18,7 +18,7 @@ struct matrixIndex{
 
 double* jacobi(double *Q, int N){
     double PI = acos(-1.0);
-    double threshold = 1e-10; // how close to zero should non-diagonal elements be
+    double threshold = 1e-20; // how close to zero should non-diagonal elements be
 
     // copy of Q
     double *D = malloc(N*N*sizeof(double));
@@ -41,6 +41,7 @@ double* jacobi(double *Q, int N){
     double *S1t = malloc(N*N*sizeof(double));
 
     bool diagonal = false;
+    int loopcounter = 0;
     do{
         // find biggest off diagonal value
         struct matrixIndex biggest = biggestOffDiag(D, N);
@@ -123,6 +124,11 @@ double* jacobi(double *Q, int N){
     
         free(tmp);
 
+        // ugly hack to stop infinite loops when perturbing an element causes an infinite lock
+        if (++loopcounter > 1000*N*N){
+            diagonal = true;
+        }
+
     } while (!diagonal);
 
     double *eigenvalues = malloc(N*sizeof(double));
@@ -146,25 +152,34 @@ double err_propag(int N, double dq){
     srand(time(0));
     for (int i=0; i<N; i++){
         for (int j=i; j<N; j++){
-            M[i*N+j] = rand()/RAND_MAX;
+            M[i*N+j] = ((double) rand())/(RAND_MAX/100.0); // numbers around ones to hundreds
             M[j*N+i] = M[i*N+j];
         }
     }
 
+//    for (int i=0; i<N; i++){
+//        for (int j=0; j<N; j++){
+//            printf("%f\t", M[i*N+j]);
+//            }
+//        printf("\n");
+//    }
+
     double *eigen1 = jacobi(M, N);
 
-    //perturb and recalculate
+    // perturb and recalculate
     int x = rand() % (N*N);
-    M[x] = M[x]*dq;
+    M[x] = M[x] + M[x]*dq;
 
     double *eigen2 = jacobi(M, N);
-
+    
     double eigennorm = 0;
     double errornorm = 0;
     for (int i=0; i<N; i++){
         eigennorm += eigen1[i] * eigen1[i];
-        errornorm += (eigen2[i]-eigen1[i]);
+        errornorm += pow((eigen2[i]-eigen1[i]), 2);
     }
+
+//    printf("%f\t%f\t", eigennorm, errornorm);
 
     return pow(errornorm, 0.5)/(pow(eigennorm, 0.5)*dq);
 }
