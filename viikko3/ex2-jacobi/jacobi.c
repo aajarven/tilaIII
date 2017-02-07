@@ -18,7 +18,7 @@ struct matrixIndex{
 
 double* jacobi(double *Q, int N){
     double PI = acos(-1.0);
-    double threshold = 1e-4; // how close to zero should non-diagonal elements be
+    double threshold = 1e-10; // how close to zero should non-diagonal elements be
 
     // copy of Q
     double *D = malloc(N*N*sizeof(double));
@@ -49,9 +49,9 @@ double* jacobi(double *Q, int N){
         double theta;
         if (D[biggest.i*N+biggest.i] == D[biggest.j*N+biggest.j]){
             if (D[biggest.i*N+biggest.j] > 0){
-                theta = PI/2;
+                theta = PI/4;
             } else {
-                theta = -PI/2;
+                theta = -PI/4;
             }
         } else {
             theta = 0.5*atan(2*D[biggest.i*N+biggest.j]/(D[biggest.i*N+biggest.i]-D[biggest.j*N+biggest.j]));
