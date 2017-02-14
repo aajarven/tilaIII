@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "roots.h"
+#include "lapack.h"
 
 double bisect_f(double a, double b){
     double raja = 1e-10;
@@ -67,4 +69,58 @@ double g(double x, double B){
 
 double dg(double x, double B){
     return exp(-B*x*x)*(exp(B*x*x)-2*B*x*cos(x)-sin(x));
+}
+
+double* myroots(int N, double *p){
+    int size = N-1;
+    double *matriisi = malloc(size*size*sizeof(double));
+
+    // first row
+    for (int i=0; i<size; i++){
+        matriisi[i] = -p[size-i-1]/p[size];
+    }
+
+    //other rows
+    for (int i=0; i<size-1; i++){
+       for (int j=0; j<size; j++){
+           if (i==j){
+               matriisi[(i+1)*size+j] = 1;
+           } else {
+               matriisi[(i+1)*size+j] = 0;
+           }
+        }
+    }
+
+//    for (int i=0; i<N-1; i++){
+//        for (int j=0; j<N-1; j++){
+//            printf("%f\t", matriisi[i*size+j]);
+//        }
+//        printf("\n");
+//    }
+    
+
+    // eigenvector thingies
+    char eigenvectors = 'N';
+    double *WR = malloc((N-1)*sizeof(double));
+    double *WI = malloc((N-1)*sizeof(double));
+    int lwork = -1;
+    double wkopt = 0;
+    int info;
+    
+    // find best lwork
+    dgeev_(&eigenvectors, &eigenvectors, &size, matriisi, &size, WR, WI, NULL, &size, NULL, &size, &wkopt, &lwork, &info);
+
+    // actually find eigenvalues
+    lwork = (int) wkopt;
+    double *work = malloc(lwork*sizeof(double));
+    dgeev_(&eigenvectors, &eigenvectors, &size, matriisi, &size, WR, WI, NULL, &size, NULL, &size, work, &lwork, &info);
+
+    // construct return array
+    double* ret = malloc(size*2*sizeof(double));
+    for (int i=0; i<N-1; i++){
+        ret[2*i] = WR[i];
+        ret[2*i+1] = WI[i];
+    }
+
+    return ret;
 }

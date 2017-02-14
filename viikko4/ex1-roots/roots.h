@@ -5,3 +5,4 @@ double df(double);
 double newton_g(double, double);
 double g(double, double);
 double dg(double, double);
+double* myroots(int, double*);
