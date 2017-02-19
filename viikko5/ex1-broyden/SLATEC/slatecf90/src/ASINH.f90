@@ -1,0 +1,74 @@
+function ASINH (X)
+!
+!! ASINH computes the arc hyperbolic sine.
+!
+!***LIBRARY   SLATEC (FNLIB)
+!***CATEGORY  C4C
+!***TYPE      SINGLE PRECISION (ASINH-S, DASINH-D, CASINH-C)
+!***KEYWORDS  ARC HYPERBOLIC SINE, ASINH, ELEMENTARY FUNCTIONS, FNLIB,
+!             INVERSE HYPERBOLIC SINE
+!***AUTHOR  Fullerton, W., (LANL)
+!***DESCRIPTION
+!
+! ASINH(X) computes the arc hyperbolic sine of X.
+!
+! Series for ASNH       on the interval  0.          to  1.00000D+00
+!                                        with weighted error   2.19E-17
+!                                         log weighted error  16.66
+!                               significant figures required  15.60
+!                                    decimal places required  17.31
+!
+!***REFERENCES  (NONE)
+!***ROUTINES CALLED  CSEVL, INITS, R1MACH
+!***REVISION HISTORY  (YYMMDD)
+!   770401  DATE WRITTEN
+!   890531  Changed all specific intrinsics to generic.  (WRB)
+!   890531  REVISION DATE from Version 3.2
+!   891214  Prologue converted to Version 4.0 format.  (BAB)
+!***END PROLOGUE  ASINH
+  DIMENSION ASNHCS(20)
+  LOGICAL FIRST
+  SAVE ALN2, ASNHCS, NTERMS, XMAX, SQEPS, FIRST
+  DATA ALN2 /0.69314718055994530942E0/
+  DATA ASNHCS( 1) /   -.12820039911738186E0 /
+  DATA ASNHCS( 2) /   -.058811761189951768E0 /
+  DATA ASNHCS( 3) /    .004727465432212481E0 /
+  DATA ASNHCS( 4) /   -.000493836316265361E0 /
+  DATA ASNHCS( 5) /    .000058506207058557E0 /
+  DATA ASNHCS( 6) /   -.000007466998328931E0 /
+  DATA ASNHCS( 7) /    .000001001169358355E0 /
+  DATA ASNHCS( 8) /   -.000000139035438587E0 /
+  DATA ASNHCS( 9) /    .000000019823169483E0 /
+  DATA ASNHCS(10) /   -.000000002884746841E0 /
+  DATA ASNHCS(11) /    .000000000426729654E0 /
+  DATA ASNHCS(12) /   -.000000000063976084E0 /
+  DATA ASNHCS(13) /    .000000000009699168E0 /
+  DATA ASNHCS(14) /   -.000000000001484427E0 /
+  DATA ASNHCS(15) /    .000000000000229037E0 /
+  DATA ASNHCS(16) /   -.000000000000035588E0 /
+  DATA ASNHCS(17) /    .000000000000005563E0 /
+  DATA ASNHCS(18) /   -.000000000000000874E0 /
+  DATA ASNHCS(19) /    .000000000000000138E0 /
+  DATA ASNHCS(20) /   -.000000000000000021E0 /
+  DATA FIRST /.TRUE./
+!***FIRST EXECUTABLE STATEMENT  ASINH
+  if (FIRST) THEN
+     NTERMS = INITS (ASNHCS, 20, 0.1*R1MACH(3))
+     SQEPS = SQRT (R1MACH(3))
+     XMAX = 1.0/SQEPS
+  end if
+  FIRST = .FALSE.
+!
+  Y = ABS(X)
+  if (Y > 1.0) go to 20
+!
+  ASINH = X
+  if (Y > SQEPS) ASINH = X*(1.0 + CSEVL (2.*X*X-1., ASNHCS,NTERMS))
+  return
+!
+ 20   if (Y < XMAX) ASINH = LOG (Y + SQRT(Y**2+1.))
+  if (Y >= XMAX) ASINH = ALN2 + LOG(Y)
+  ASINH = SIGN (ASINH, X)
+!
+  return
+end

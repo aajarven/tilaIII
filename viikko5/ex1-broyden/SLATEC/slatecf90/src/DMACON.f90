@@ -1,0 +1,34 @@
+subroutine DMACON
+!
+!! DMACON is subsidiary to DBVSUP.
+!
+!***LIBRARY   SLATEC
+!***TYPE      DOUBLE PRECISION (MACON-S, DMACON-D)
+!***AUTHOR  (UNKNOWN)
+!***SEE ALSO  DBVSUP
+!***ROUTINES CALLED  D1MACH
+!***COMMON BLOCKS    DML5MC
+!***REVISION HISTORY  (YYMMDD)
+!   750601  DATE WRITTEN
+!   890531  Changed all specific intrinsics to generic.  (WRB)
+!   890921  Realigned order of variables in certain COMMON blocks.
+!           (WRB)
+!   891214  Prologue converted to Version 4.0 format.  (BAB)
+!   900328  Added TYPE section.  (WRB)
+!***END PROLOGUE  DMACON
+  DOUBLE PRECISION D1MACH
+  INTEGER KE, LPAR
+  DOUBLE PRECISION DD, EPS, FOURU, SQOVFL, SRU, TWOU, URO
+  COMMON /DML5MC/ URO,SRU,EPS,SQOVFL,TWOU,FOURU,LPAR
+!***FIRST EXECUTABLE STATEMENT  DMACON
+  URO = D1MACH(4)
+  SRU = SQRT(URO)
+  DD = -LOG10(URO)
+  LPAR = 0.5D0*DD
+  KE = 0.5D0 + 0.75D0*DD
+  EPS = 10.0D0**(-2*KE)
+  SQOVFL = SQRT(D1MACH(2))
+  TWOU = 2.0D0*URO
+  FOURU = 4.0D0*URO
+  return
+end

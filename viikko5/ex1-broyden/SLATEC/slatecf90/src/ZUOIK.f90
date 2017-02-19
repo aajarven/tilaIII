@@ -1,0 +1,206 @@
+subroutine ZUOIK (ZR, ZI, FNU, KODE, IKFLG, N, YR, YI, NUF, TOL, &
+     ELIM, ALIM)
+!
+!! ZUOIK is subsidiary to ZBESH, ZBESI and ZBESK.
+!
+!***LIBRARY   SLATEC
+!***TYPE      ALL (CUOIK-A, ZUOIK-A)
+!***AUTHOR  Amos, D. E., (SNL)
+!***DESCRIPTION
+!
+!     ZUOIK COMPUTES THE LEADING TERMS OF THE UNIFORM ASYMPTOTIC
+!     EXPANSIONS FOR THE I AND K FUNCTIONS AND COMPARES THEM
+!     (IN LOGARITHMIC FORM) TO ALIM AND ELIM FOR OVER AND UNDERFLOW
+!     WHERE ALIM < ELIM. if THE MAGNITUDE, BASED ON THE LEADING
+!     EXPONENTIAL, IS LESS THAN ALIM OR GREATER THAN -ALIM, THEN
+!     THE RESULT IS ON SCALE. if NOT, THEN A REFINED TEST USING OTHER
+!     MULTIPLIERS (IN LOGARITHMIC FORM) IS MADE BASED ON ELIM. HERE
+!     EXP(-ELIM)=SMALLEST MACHINE NUMBER*1.0E+3 AND EXP(-ALIM)=
+!     EXP(-ELIM)/TOL
+!
+!     IKFLG=1 MEANS THE I SEQUENCE IS TESTED
+!          =2 MEANS THE K SEQUENCE IS TESTED
+!     NUF = 0 MEANS THE LAST MEMBER OF THE SEQUENCE IS ON SCALE
+!         =-1 MEANS AN OVERFLOW WOULD OCCUR
+!     IKFLG=1 AND NUF > 0 MEANS THE LAST NUF Y VALUES WERE SET TO ZERO
+!             THE FIRST N-NUF VALUES MUST BE SET BY ANOTHER ROUTINE
+!     IKFLG=2 AND NUF == N MEANS ALL Y VALUES WERE SET TO ZERO
+!     IKFLG=2 AND 0 < NUF < N NOT CONSIDERED. Y MUST BE SET BY
+!             ANOTHER ROUTINE
+!
+!***SEE ALSO  ZBESH, ZBESI, ZBESK
+!***ROUTINES CALLED  D1MACH, ZABS, ZLOG, ZUCHK, ZUNHJ, ZUNIK
+!***REVISION HISTORY  (YYMMDD)
+!   830501  DATE WRITTEN
+!   910415  Prologue converted to Version 4.0 format.  (BAB)
+!   930122  Added ZLOG to EXTERNAL statement.  (RWC)
+!***END PROLOGUE  ZUOIK
+!     COMPLEX ARG,ASUM,BSUM,CWRK,CZ,CZERO,PHI,SUM,Y,Z,ZB,ZETA1,ZETA2,ZN,
+!    *ZR
+  DOUBLE PRECISION AARG, AIC, ALIM, APHI, ARGI, ARGR, ASUMI, ASUMR, &
+   ASCLE, AX, AY, BSUMI, BSUMR, CWRKI, CWRKR, CZI, CZR, ELIM, FNN, &
+   FNU, GNN, GNU, PHII, PHIR, RCZ, STR, STI, SUMI, SUMR, TOL, YI, &
+   YR, ZBI, ZBR, ZEROI, ZEROR, ZETA1I, ZETA1R, ZETA2I, ZETA2R, ZI, &
+   ZNI, ZNR, ZR, ZRI, ZRR, D1MACH, ZABS
+  INTEGER I, IDUM, IFORM, IKFLG, INIT, KODE, N, NN, NUF, NW
+  DIMENSION YR(N), YI(N), CWRKR(16), CWRKI(16)
+  EXTERNAL ZABS, ZLOG
+  DATA ZEROR,ZEROI / 0.0D0, 0.0D0 /
+  DATA AIC / 1.265512123484645396D+00 /
+!***FIRST EXECUTABLE STATEMENT  ZUOIK
+  NUF = 0
+  NN = N
+  ZRR = ZR
+  ZRI = ZI
+  if (ZR >= 0.0D0) go to 10
+  ZRR = -ZR
+  ZRI = -ZI
+   10 CONTINUE
+  ZBR = ZRR
+  ZBI = ZRI
+  AX = ABS(ZR)*1.7321D0
+  AY = ABS(ZI)
+  IFORM = 1
+  if (AY > AX) IFORM = 2
+  GNU = MAX(FNU,1.0D0)
+  if (IKFLG == 1) go to 20
+  FNN = NN
+  GNN = FNU + FNN - 1.0D0
+  GNU = MAX(GNN,FNN)
+   20 CONTINUE
+!-----------------------------------------------------------------------
+!     ONLY THE MAGNITUDE OF ARG AND PHI ARE NEEDED ALONG WITH THE
+!     REAL PARTS OF ZETA1, ZETA2 AND ZB. NO ATTEMPT IS MADE TO GET
+!     THE SIGN OF THE IMAGINARY PART CORRECT.
+!-----------------------------------------------------------------------
+  if (IFORM == 2) go to 30
+  INIT = 0
+  call ZUNIK(ZRR, ZRI, GNU, IKFLG, 1, TOL, INIT, PHIR, PHII, &
+   ZETA1R, ZETA1I, ZETA2R, ZETA2I, SUMR, SUMI, CWRKR, CWRKI)
+  CZR = -ZETA1R + ZETA2R
+  CZI = -ZETA1I + ZETA2I
+  go to 50
+   30 CONTINUE
+  ZNR = ZRI
+  ZNI = -ZRR
+  if (ZI > 0.0D0) go to 40
+  ZNR = -ZNR
+   40 CONTINUE
+  call ZUNHJ(ZNR, ZNI, GNU, 1, TOL, PHIR, PHII, ARGR, ARGI, ZETA1R, &
+   ZETA1I, ZETA2R, ZETA2I, ASUMR, ASUMI, BSUMR, BSUMI)
+  CZR = -ZETA1R + ZETA2R
+  CZI = -ZETA1I + ZETA2I
+  AARG = ZABS(ARGR,ARGI)
+   50 CONTINUE
+  if (KODE == 1) go to 60
+  CZR = CZR - ZBR
+  CZI = CZI - ZBI
+   60 CONTINUE
+  if (IKFLG == 1) go to 70
+  CZR = -CZR
+  CZI = -CZI
+   70 CONTINUE
+  APHI = ZABS(PHIR,PHII)
+  RCZ = CZR
+!-----------------------------------------------------------------------
+!     OVERFLOW TEST
+!-----------------------------------------------------------------------
+  if (RCZ > ELIM) go to 210
+  if (RCZ < ALIM) go to 80
+  RCZ = RCZ + LOG(APHI)
+  if (IFORM == 2) RCZ = RCZ - 0.25D0*LOG(AARG) - AIC
+  if (RCZ > ELIM) go to 210
+  go to 130
+   80 CONTINUE
+!-----------------------------------------------------------------------
+!     UNDERFLOW TEST
+!-----------------------------------------------------------------------
+  if (RCZ < (-ELIM)) go to 90
+  if (RCZ > (-ALIM)) go to 130
+  RCZ = RCZ + LOG(APHI)
+  if (IFORM == 2) RCZ = RCZ - 0.25D0*LOG(AARG) - AIC
+  if (RCZ > (-ELIM)) go to 110
+   90 CONTINUE
+  DO 100 I=1,NN
+    YR(I) = ZEROR
+    YI(I) = ZEROI
+  100 CONTINUE
+  NUF = NN
+  return
+  110 CONTINUE
+  ASCLE = 1.0D+3*D1MACH(1)/TOL
+  call ZLOG(PHIR, PHII, STR, STI, IDUM)
+  CZR = CZR + STR
+  CZI = CZI + STI
+  if (IFORM == 1) go to 120
+  call ZLOG(ARGR, ARGI, STR, STI, IDUM)
+  CZR = CZR - 0.25D0*STR - AIC
+  CZI = CZI - 0.25D0*STI
+  120 CONTINUE
+  AX = EXP(RCZ)/TOL
+  AY = CZI
+  CZR = AX*COS(AY)
+  CZI = AX*SIN(AY)
+  call ZUCHK(CZR, CZI, NW, ASCLE, TOL)
+  if (NW /= 0) go to 90
+  130 CONTINUE
+  if (IKFLG == 2) RETURN
+  if (N == 1) RETURN
+!-----------------------------------------------------------------------
+!     SET UNDERFLOWS ON I SEQUENCE
+!-----------------------------------------------------------------------
+  140 CONTINUE
+  GNU = FNU + (NN-1)
+  if (IFORM == 2) go to 150
+  INIT = 0
+  call ZUNIK(ZRR, ZRI, GNU, IKFLG, 1, TOL, INIT, PHIR, PHII, &
+   ZETA1R, ZETA1I, ZETA2R, ZETA2I, SUMR, SUMI, CWRKR, CWRKI)
+  CZR = -ZETA1R + ZETA2R
+  CZI = -ZETA1I + ZETA2I
+  go to 160
+  150 CONTINUE
+  call ZUNHJ(ZNR, ZNI, GNU, 1, TOL, PHIR, PHII, ARGR, ARGI, ZETA1R, &
+   ZETA1I, ZETA2R, ZETA2I, ASUMR, ASUMI, BSUMR, BSUMI)
+  CZR = -ZETA1R + ZETA2R
+  CZI = -ZETA1I + ZETA2I
+  AARG = ZABS(ARGR,ARGI)
+  160 CONTINUE
+  if (KODE == 1) go to 170
+  CZR = CZR - ZBR
+  CZI = CZI - ZBI
+  170 CONTINUE
+  APHI = ZABS(PHIR,PHII)
+  RCZ = CZR
+  if (RCZ < (-ELIM)) go to 180
+  if (RCZ > (-ALIM)) RETURN
+  RCZ = RCZ + LOG(APHI)
+  if (IFORM == 2) RCZ = RCZ - 0.25D0*LOG(AARG) - AIC
+  if (RCZ > (-ELIM)) go to 190
+  180 CONTINUE
+  YR(NN) = ZEROR
+  YI(NN) = ZEROI
+  NN = NN - 1
+  NUF = NUF + 1
+  if (NN == 0) RETURN
+  go to 140
+  190 CONTINUE
+  ASCLE = 1.0D+3*D1MACH(1)/TOL
+  call ZLOG(PHIR, PHII, STR, STI, IDUM)
+  CZR = CZR + STR
+  CZI = CZI + STI
+  if (IFORM == 1) go to 200
+  call ZLOG(ARGR, ARGI, STR, STI, IDUM)
+  CZR = CZR - 0.25D0*STR - AIC
+  CZI = CZI - 0.25D0*STI
+  200 CONTINUE
+  AX = EXP(RCZ)/TOL
+  AY = CZI
+  CZR = AX*COS(AY)
+  CZI = AX*SIN(AY)
+  call ZUCHK(CZR, CZI, NW, ASCLE, TOL)
+  if (NW /= 0) go to 180
+  return
+  210 CONTINUE
+  NUF = -1
+  return
+end

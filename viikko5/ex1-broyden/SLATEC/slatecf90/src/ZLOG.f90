@@ -1,0 +1,52 @@
+subroutine ZLOG (AR, AI, BR, BI, IERR)
+!
+!! ZLOG is subsidiary to ZBESH, ZBESI, ZBESJ, ZBESK, ZBESY, ZAIRY and ZBIRY.
+!
+!***LIBRARY   SLATEC
+!***TYPE      ALL (ZLOG-A)
+!***AUTHOR  Amos, D. E., (SNL)
+!***DESCRIPTION
+!
+!     DOUBLE PRECISION COMPLEX LOGARITHM B=CLOG(A)
+!     IERR=0,NORMAL RETURN      IERR=1, Z=CMPLX(0.0,0.0)
+!***SEE ALSO  ZAIRY, ZBESH, ZBESI, ZBESJ, ZBESK, ZBESY, ZBIRY
+!***ROUTINES CALLED  ZABS
+!***REVISION HISTORY  (YYMMDD)
+!   830501  DATE WRITTEN
+!   910415  Prologue converted to Version 4.0 format.  (BAB)
+!***END PROLOGUE  ZLOG
+  DOUBLE PRECISION AR, AI, BR, BI, ZM, DTHETA, DPI, DHPI
+  DOUBLE PRECISION ZABS
+  INTEGER IERR
+  EXTERNAL ZABS
+  DATA DPI , DHPI  / 3.141592653589793238462643383D+0, &
+                     1.570796326794896619231321696D+0/
+!***FIRST EXECUTABLE STATEMENT  ZLOG
+  IERR=0
+  if (AR == 0.0D+0) go to 10
+  if (AI == 0.0D+0) go to 20
+  DTHETA = DATAN(AI/AR)
+  if (DTHETA <= 0.0D+0) go to 40
+  if (AR < 0.0D+0) DTHETA = DTHETA - DPI
+  go to 50
+   10 if (AI == 0.0D+0) go to 60
+  BI = DHPI
+  BR = LOG(ABS(AI))
+  if (AI < 0.0D+0) BI = -BI
+  return
+   20 if (AR > 0.0D+0) go to 30
+  BR = LOG(ABS(AR))
+  BI = DPI
+  return
+   30 BR = LOG(AR)
+  BI = 0.0D+0
+  return
+   40 if (AR < 0.0D+0) DTHETA = DTHETA + DPI
+   50 ZM = ZABS(AR,AI)
+  BR = LOG(ZM)
+  BI = DTHETA
+  return
+   60 CONTINUE
+  IERR=1
+  return
+end

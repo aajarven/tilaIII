@@ -1,0 +1,75 @@
+  DOUBLE PRECISION FUNCTION DBINOM (N, M)
+!
+!! DBINOM computes the binomial coefficients.
+!
+!***LIBRARY   SLATEC (FNLIB)
+!***CATEGORY  C1
+!***TYPE      DOUBLE PRECISION (BINOM-S, DBINOM-D)
+!***KEYWORDS  BINOMIAL COEFFICIENTS, FNLIB, SPECIAL FUNCTIONS
+!***AUTHOR  Fullerton, W., (LANL)
+!***DESCRIPTION
+!
+! DBINOM(N,M) calculates the double precision binomial coefficient
+! for integer arguments N and M.  The result is (N!)/((M!)(N-M)!).
+!
+!***REFERENCES  (NONE)
+!***ROUTINES CALLED  D1MACH, D9LGMC, DLNREL, XERMSG
+!***REVISION HISTORY  (YYMMDD)
+!   770601  DATE WRITTEN
+!   890531  Changed all specific intrinsics to generic.  (WRB)
+!   890531  REVISION DATE from Version 3.2
+!   891214  Prologue converted to Version 4.0 format.  (BAB)
+!   900315  CALLs to XERROR changed to CALLs to XERMSG.  (THJ)
+!***END PROLOGUE  DBINOM
+  DOUBLE PRECISION CORR, FINTMX, SQ2PIL, XK, XN, XNK, D9LGMC, &
+    DLNREL, D1MACH, BILNMX
+  LOGICAL FIRST
+  SAVE SQ2PIL, BILNMX, FINTMX, FIRST
+  DATA SQ2PIL / 0.91893853320467274178032973640562D0 /
+  DATA FIRST /.TRUE./
+!***FIRST EXECUTABLE STATEMENT  DBINOM
+  if (FIRST) THEN
+     BILNMX = LOG(D1MACH(2)) - 0.0001D0
+     FINTMX = 0.9D0/D1MACH(3)
+  end if
+  FIRST = .FALSE.
+!
+  if (N  <  0 .OR. M  <  0) call XERMSG ('SLATEC', 'DBINOM', &
+     'N OR M LT ZERO', 1, 2)
+  if (N  <  M) call XERMSG ('SLATEC', 'DBINOM', 'N LT M', 2, 2)
+!
+  K = MIN (M, N-M)
+  if (K > 20) go to 30
+  if (K*LOG(AMAX0(N,1)) > BILNMX) go to 30
+!
+  DBINOM = 1.0D0
+  if (K == 0) RETURN
+  DO 20 I=1,K
+    XN = N - I + 1
+    XK = I
+    DBINOM = DBINOM * (XN/XK)
+ 20   CONTINUE
+!
+  if (DBINOM < FINTMX) DBINOM = AINT (DBINOM+0.5D0)
+  return
+!
+! if K < 9, APPROX IS NOT VALID AND ANSWER IS CLOSE TO THE OVERFLOW LIM
+ 30   if (K  <  9) call XERMSG ('SLATEC', 'DBINOM', &
+     'RESULT OVERFLOWS BECAUSE N AND/OR M TOO BIG', 3, 2)
+!
+  XN = N + 1
+  XK = K + 1
+  XNK = N - K + 1
+!
+  CORR = D9LGMC(XN) - D9LGMC(XK) - D9LGMC(XNK)
+  DBINOM = XK*LOG(XNK/XK) - XN*DLNREL(-(XK-1.0D0)/XN) &
+    -0.5D0*LOG(XN*XNK/XK) + 1.0D0 - SQ2PIL + CORR
+!
+  if (DBINOM  >  BILNMX) call XERMSG ('SLATEC', 'DBINOM', &
+     'RESULT OVERFLOWS BECAUSE N AND/OR M TOO BIG', 3, 2)
+!
+  DBINOM = EXP (DBINOM)
+  if (DBINOM < FINTMX) DBINOM = AINT (DBINOM+0.5D0)
+!
+  return
+end

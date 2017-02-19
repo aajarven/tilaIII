@@ -1,0 +1,153 @@
+function DAWS (X)
+!
+!! DAWS computes Dawson's function.
+!
+!***LIBRARY   SLATEC (FNLIB)
+!***CATEGORY  C8C
+!***TYPE      SINGLE PRECISION (DAWS-S, DDAWS-D)
+!***KEYWORDS  DAWSON'S FUNCTION, FNLIB, SPECIAL FUNCTIONS
+!***AUTHOR  Fullerton, W., (LANL)
+!***DESCRIPTION
+!
+! DAWS(X) calculates Dawson's integral for real argument X.
+!
+! Series for DAW        on the interval  0.          to  1.00000D+00
+!                                        with weighted error   3.83E-17
+!                                         log weighted error  16.42
+!                               significant figures required  15.78
+!                                    decimal places required  16.97
+!
+! Series for DAW2       on the interval  0.          to  1.60000D+01
+!                                        with weighted error   5.17E-17
+!                                         log weighted error  16.29
+!                               significant figures required  15.90
+!                                    decimal places required  17.02
+!
+! Series for DAWA       on the interval  0.          to  6.25000D-02
+!                                        with weighted error   2.24E-17
+!                                         log weighted error  16.65
+!                               significant figures required  14.73
+!                                    decimal places required  17.36
+!
+!***REFERENCES  (NONE)
+!***ROUTINES CALLED  CSEVL, INITS, R1MACH, XERMSG
+!***REVISION HISTORY  (YYMMDD)
+!   780401  DATE WRITTEN
+!   890531  Changed all specific intrinsics to generic.  (WRB)
+!   890531  REVISION DATE from Version 3.2
+!   891214  Prologue converted to Version 4.0 format.  (BAB)
+!   900315  CALLs to XERROR changed to CALLs to XERMSG.  (THJ)
+!   920618  Removed space from variable names.  (RWC, WRB)
+!***END PROLOGUE  DAWS
+  DIMENSION DAWCS(13), DAW2CS(29), DAWACS(26)
+  LOGICAL FIRST
+  SAVE DAWCS, DAW2CS, DAWACS, NTDAW, NTDAW2, NTDAWA, &
+   XSML, XBIG, XMAX, FIRST
+  DATA DAWCS( 1) /   -.006351734375145949E0 /
+  DATA DAWCS( 2) /   -.22940714796773869E0 /
+  DATA DAWCS( 3) /    .022130500939084764E0 /
+  DATA DAWCS( 4) /   -.001549265453892985E0 /
+  DATA DAWCS( 5) /    .000084973277156849E0 /
+  DATA DAWCS( 6) /   -.000003828266270972E0 /
+  DATA DAWCS( 7) /    .000000146285480625E0 /
+  DATA DAWCS( 8) /   -.000000004851982381E0 /
+  DATA DAWCS( 9) /    .000000000142146357E0 /
+  DATA DAWCS(10) /   -.000000000003728836E0 /
+  DATA DAWCS(11) /    .000000000000088549E0 /
+  DATA DAWCS(12) /   -.000000000000001920E0 /
+  DATA DAWCS(13) /    .000000000000000038E0 /
+  DATA DAW2CS( 1) /   -.056886544105215527E0 /
+  DATA DAW2CS( 2) /   -.31811346996168131E0 /
+  DATA DAW2CS( 3) /    .20873845413642237E0 /
+  DATA DAW2CS( 4) /   -.12475409913779131E0 /
+  DATA DAW2CS( 5) /    .067869305186676777E0 /
+  DATA DAW2CS( 6) /   -.033659144895270940E0 /
+  DATA DAW2CS( 7) /    .015260781271987972E0 /
+  DATA DAW2CS( 8) /   -.006348370962596214E0 /
+  DATA DAW2CS( 9) /    .002432674092074852E0 /
+  DATA DAW2CS(10) /   -.000862195414910650E0 /
+  DATA DAW2CS(11) /    .000283765733363216E0 /
+  DATA DAW2CS(12) /   -.000087057549874170E0 /
+  DATA DAW2CS(13) /    .000024986849985481E0 /
+  DATA DAW2CS(14) /   -.000006731928676416E0 /
+  DATA DAW2CS(15) /    .000001707857878557E0 /
+  DATA DAW2CS(16) /   -.000000409175512264E0 /
+  DATA DAW2CS(17) /    .000000092828292216E0 /
+  DATA DAW2CS(18) /   -.000000019991403610E0 /
+  DATA DAW2CS(19) /    .000000004096349064E0 /
+  DATA DAW2CS(20) /   -.000000000800324095E0 /
+  DATA DAW2CS(21) /    .000000000149385031E0 /
+  DATA DAW2CS(22) /   -.000000000026687999E0 /
+  DATA DAW2CS(23) /    .000000000004571221E0 /
+  DATA DAW2CS(24) /   -.000000000000751873E0 /
+  DATA DAW2CS(25) /    .000000000000118931E0 /
+  DATA DAW2CS(26) /   -.000000000000018116E0 /
+  DATA DAW2CS(27) /    .000000000000002661E0 /
+  DATA DAW2CS(28) /   -.000000000000000377E0 /
+  DATA DAW2CS(29) /    .000000000000000051E0 /
+  DATA DAWACS( 1) /    .01690485637765704E0 /
+  DATA DAWACS( 2) /    .00868325227840695E0 /
+  DATA DAWACS( 3) /    .00024248640424177E0 /
+  DATA DAWACS( 4) /    .00001261182399572E0 /
+  DATA DAWACS( 5) /    .00000106645331463E0 /
+  DATA DAWACS( 6) /    .00000013581597947E0 /
+  DATA DAWACS( 7) /    .00000002171042356E0 /
+  DATA DAWACS( 8) /    .00000000286701050E0 /
+  DATA DAWACS( 9) /   -.00000000019013363E0 /
+  DATA DAWACS(10) /   -.00000000030977804E0 /
+  DATA DAWACS(11) /   -.00000000010294148E0 /
+  DATA DAWACS(12) /   -.00000000000626035E0 /
+  DATA DAWACS(13) /    .00000000000856313E0 /
+  DATA DAWACS(14) /    .00000000000303304E0 /
+  DATA DAWACS(15) /   -.00000000000025236E0 /
+  DATA DAWACS(16) /   -.00000000000042106E0 /
+  DATA DAWACS(17) /   -.00000000000004431E0 /
+  DATA DAWACS(18) /    .00000000000004911E0 /
+  DATA DAWACS(19) /    .00000000000001235E0 /
+  DATA DAWACS(20) /   -.00000000000000578E0 /
+  DATA DAWACS(21) /   -.00000000000000228E0 /
+  DATA DAWACS(22) /    .00000000000000076E0 /
+  DATA DAWACS(23) /    .00000000000000038E0 /
+  DATA DAWACS(24) /   -.00000000000000011E0 /
+  DATA DAWACS(25) /   -.00000000000000006E0 /
+  DATA DAWACS(26) /    .00000000000000002E0 /
+  DATA FIRST /.TRUE./
+!***FIRST EXECUTABLE STATEMENT  DAWS
+  if (FIRST) THEN
+     EPS = R1MACH(3)
+     NTDAW  = INITS (DAWCS,  13, 0.1*EPS)
+     NTDAW2 = INITS (DAW2CS, 29, 0.1*EPS)
+     NTDAWA = INITS (DAWACS, 26, 0.1*EPS)
+!
+     XSML = SQRT (1.5*EPS)
+     XBIG = SQRT (0.5/EPS)
+     XMAX = EXP (MIN (-LOG(2.*R1MACH(1)), LOG(R1MACH(2))) - 1.0)
+  end if
+  FIRST = .FALSE.
+!
+  Y = ABS(X)
+  if (Y > 1.0) go to 20
+!
+  DAWS = X
+  if (Y <= XSML) RETURN
+!
+  DAWS = X * (0.75 + CSEVL (2.0*Y*Y-1.0, DAWCS, NTDAW))
+  return
+!
+ 20   if (Y > 4.0) go to 30
+  DAWS = X * (0.25 + CSEVL (0.125*Y*Y-1.0, DAW2CS, NTDAW2))
+  return
+!
+ 30   if (Y > XMAX) go to 40
+  DAWS = 0.5/X
+  if (Y > XBIG) RETURN
+!
+  DAWS = (0.5 + CSEVL (32.0/Y**2-1.0, DAWACS, NTDAWA)) / X
+  return
+!
+ 40   call XERMSG ('SLATEC', 'DAWS', 'ABS(X) SO LARGE DAWS UNDERFLOWS', &
+     1, 1)
+  DAWS = 0.0
+  return
+!
+end

@@ -1,0 +1,87 @@
+subroutine DFULMT (I, J, AIJ, INDCAT, PRGOPT, DATTRV, IFLAG)
+!
+!! DFULMT decodes a standard 2D Fortran array passed as a vector.
+!
+!***SUBSIDIARY
+!***PURPOSE  Subsidiary to DSPLP
+!***LIBRARY   SLATEC
+!***TYPE      DOUBLE PRECISION (FULMAT-S, DFULMT-D)
+!***AUTHOR  (UNKNOWN)
+!***DESCRIPTION
+!
+!     DECODES A STANDARD TWO-DIMENSIONAL FORTRAN ARRAY PASSED
+!     IN THE ARRAY DATTRV(IA,*).  THE ROW DIMENSION IA AND THE
+!     MATRIX DIMENSIONS MRELAS AND NVARS MUST SIMULTANEOUSLY BE
+!     PASSED USING THE OPTION ARRAY, PRGOPT(*).  IT IS AN ERROR
+!     if THIS DATA IS NOT PASSED TO DFULMT( ).
+!     EXAMPLE-- (FOR USE TOGETHER WITH DSPLP().)
+!      EXTERNAL DUSRMT
+!      DIMENSION DATTRV(IA,*)
+!      PRGOPT(01)=7
+!      PRGOPT(02)=68
+!      PRGOPT(03)=1
+!      PRGOPT(04)=IA
+!      PRGOPT(05)=MRELAS
+!      PRGOPT(06)=NVARS
+!      PRGOPT(07)=1
+!     call DSPLP(  ... DFULMT INSTEAD OF DUSRMT...)
+!
+!***SEE ALSO  DSPLP
+!***ROUTINES CALLED  XERMSG
+!***REVISION HISTORY  (YYMMDD)
+!   811215  DATE WRITTEN
+!   890531  Changed all specific intrinsics to generic.  (WRB)
+!   891214  Prologue converted to Version 4.0 format.  (BAB)
+!   900315  CALLs to XERROR changed to CALLs to XERMSG.  (THJ)
+!   900328  Added TYPE section.  (WRB)
+!***END PROLOGUE  DFULMT
+  DOUBLE PRECISION AIJ,ZERO,DATTRV(*),PRGOPT(*)
+  INTEGER IFLAG(10)
+  SAVE ZERO
+!***FIRST EXECUTABLE STATEMENT  DFULMT
+  if (.NOT.(IFLAG(1) == 1)) go to 50
+!     INITIALIZE POINTERS TO PROCESS FULL TWO-DIMENSIONAL FORTRAN
+!     ARRAYS.
+  ZERO = 0.D0
+  LP = 1
+   10 NEXT = PRGOPT(LP)
+  if (.NOT.(NEXT <= 1)) go to 20
+  NERR = 29
+  LEVEL = 1
+  call XERMSG ('SLATEC', 'DFULMT', &
+     'IN DSPLP, ROW DIM., MRELAS, NVARS ARE MISSING FROM PRGOPT.', &
+     NERR, LEVEL)
+  IFLAG(1) = 3
+  go to 110
+   20 KEY = PRGOPT(LP+1)
+  if (.NOT.(KEY /= 68)) go to 30
+  LP = NEXT
+  go to 10
+   30 if (.NOT.(PRGOPT(LP+2) == ZERO)) go to 40
+  LP = NEXT
+  go to 10
+   40 IFLAG(2) = 1
+  IFLAG(3) = 1
+  IFLAG(4) = PRGOPT(LP+3)
+  IFLAG(5) = PRGOPT(LP+4)
+  IFLAG(6) = PRGOPT(LP+5)
+  go to 110
+   50 if (.NOT.(IFLAG(1) == 2)) go to 100
+   60 I = IFLAG(2)
+  J = IFLAG(3)
+  if (.NOT.(J > IFLAG(6))) go to 70
+  IFLAG(1) = 3
+  go to 110
+   70 if (.NOT.(I > IFLAG(5))) go to 80
+  IFLAG(2) = 1
+  IFLAG(3) = J + 1
+  go to 60
+   80 AIJ = DATTRV(IFLAG(4)*(J-1)+I)
+  IFLAG(2) = I + 1
+  if (.NOT.(AIJ == ZERO)) go to 90
+  go to 60
+   90 INDCAT = 0
+  go to 110
+  100 CONTINUE
+  110 RETURN
+end

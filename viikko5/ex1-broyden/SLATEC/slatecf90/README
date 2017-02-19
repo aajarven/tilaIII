@@ -1,0 +1,50 @@
+
+
+Fortran90 version of SLATEC double precision routines. 
+
+A. Kuronen, 2009, antti.kuronen@helsinki.fi
+
+Official source: http://www.netlib.org/slatec/
+
+The F90 version obtained from: 
+http://people.scs.fsu.edu/~burkardt/f_src/slatec/slatec.html 
+
+CHANGES
+-------
+
+The routine D1MACH changed to use Fortran90 floating point inquiry
+functions.
+
+Feb 2017: Corrected a bug: Jacobian was calculated as its
+transpose. Both in C anf Fortran versions.
+
+BUILDING THE LIBRARY
+--------------------
+
+To create the library go to directory 'src' and give commands
+
+make cleanall
+make
+
+This should create file libslatec.a in that directory.
+Has been tested using gfortran, ifort, and openf95 compilers. 
+
+
+USING THE LIBRARY
+-----------------
+
+To use the library in your programs use the compilation command like
+
+gfortran -o myprog myprog.f90 -lslatec -L/path/to/library/directory
+
+When using the library in C programs (at least with gcc) you should
+compile the program with gfortran:
+
+gfortran -o myprog myprog.c -lslatec -L/path/to/library/directory
+
+(This is because SLATEC built by gfortran uses some fortran libraries
+and they are automatically linked when using gfortran to compile the
+code. On the other hand, to compile the C code gfortran notices that
+the source is in C and processes it using the C front-end.)
+
+

@@ -1,0 +1,82 @@
+DOUBLE PRECISION FUNCTION DBESJ1 (X)
+!
+!! DBESJ1 computes the Bessel function of the first kind of order one.
+!
+!***LIBRARY   SLATEC (FNLIB)
+!***CATEGORY  C10A1
+!***TYPE      DOUBLE PRECISION (BESJ1-S, DBESJ1-D)
+!***KEYWORDS  BESSEL FUNCTION, FIRST KIND, FNLIB, ORDER ONE,
+!             SPECIAL FUNCTIONS
+!***AUTHOR  Fullerton, W., (LANL)
+!***DESCRIPTION
+!
+! DBESJ1(X) calculates the double precision Bessel function of the
+! first kind of order one for double precision argument X.
+!
+! Series for BJ1        on the interval  0.          to  1.60000E+01
+!                                        with weighted error   1.16E-33
+!                                         log weighted error  32.93
+!                               significant figures required  32.36
+!                                    decimal places required  33.57
+!
+!***REFERENCES  (NONE)
+!***ROUTINES CALLED  D1MACH, D9B1MP, DCSEVL, INITDS, XERMSG
+!***REVISION HISTORY  (YYMMDD)
+!   780601  DATE WRITTEN
+!   890531  Changed all specific intrinsics to generic.  (WRB)
+!   890531  REVISION DATE from Version 3.2
+!   891214  Prologue converted to Version 4.0 format.  (BAB)
+!   900315  CALLs to XERROR changed to CALLs to XERMSG.  (THJ)
+!   910401  Corrected error in code which caused values to have the
+!           wrong sign for arguments less than 4.0.  (WRB)
+!***END PROLOGUE  DBESJ1
+  DOUBLE PRECISION X, BJ1CS(19), AMPL, THETA, XSML, XMIN, Y, &
+    D1MACH, DCSEVL
+  LOGICAL FIRST
+  SAVE BJ1CS, NTJ1, XSML, XMIN, FIRST
+  DATA BJ1CS(  1) / -.117261415133327865606240574524003D+0    /
+  DATA BJ1CS(  2) / -.253615218307906395623030884554698D+0    /
+  DATA BJ1CS(  3) / +.501270809844695685053656363203743D-1    /
+  DATA BJ1CS(  4) / -.463151480962508191842619728789772D-2    /
+  DATA BJ1CS(  5) / +.247996229415914024539124064592364D-3    /
+  DATA BJ1CS(  6) / -.867894868627882584521246435176416D-5    /
+  DATA BJ1CS(  7) / +.214293917143793691502766250991292D-6    /
+  DATA BJ1CS(  8) / -.393609307918317979229322764073061D-8    /
+  DATA BJ1CS(  9) / +.559118231794688004018248059864032D-10   /
+  DATA BJ1CS( 10) / -.632761640466139302477695274014880D-12   /
+  DATA BJ1CS( 11) / +.584099161085724700326945563268266D-14   /
+  DATA BJ1CS( 12) / -.448253381870125819039135059199999D-16   /
+  DATA BJ1CS( 13) / +.290538449262502466306018688000000D-18   /
+  DATA BJ1CS( 14) / -.161173219784144165412118186666666D-20   /
+  DATA BJ1CS( 15) / +.773947881939274637298346666666666D-23   /
+  DATA BJ1CS( 16) / -.324869378211199841143466666666666D-25   /
+  DATA BJ1CS( 17) / +.120223767722741022720000000000000D-27   /
+  DATA BJ1CS( 18) / -.395201221265134933333333333333333D-30   /
+  DATA BJ1CS( 19) / +.116167808226645333333333333333333D-32   /
+  DATA FIRST /.TRUE./
+!***FIRST EXECUTABLE STATEMENT  DBESJ1
+  if (FIRST) THEN
+     NTJ1 = INITDS (BJ1CS, 19, 0.1*REAL(D1MACH(3)))
+!
+     XSML = SQRT(8.0D0*D1MACH(3))
+     XMIN = 2.0D0*D1MACH(1)
+  end if
+  FIRST = .FALSE.
+!
+  Y = ABS(X)
+  if (Y > 4.0D0) go to 20
+!
+  DBESJ1 = 0.0D0
+  if (Y == 0.0D0) RETURN
+  if (Y  <=  XMIN) call XERMSG ('SLATEC', 'DBESJ1', &
+     'ABS(X) SO SMALL J1 UNDERFLOWS', 1, 1)
+  if (Y > XMIN) DBESJ1 = 0.5D0*X
+  if (Y > XSML) DBESJ1 = X*(.25D0 + DCSEVL (.125D0*Y*Y-1.D0, &
+    BJ1CS, NTJ1) )
+  return
+!
+ 20   call D9B1MP (Y, AMPL, THETA)
+  DBESJ1 = SIGN (AMPL, X) * COS(THETA)
+!
+  return
+end
