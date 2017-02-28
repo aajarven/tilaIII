@@ -18,7 +18,7 @@ double re_der(double x){
        h = h/2;
    }
 
-//    for (int i=0; i<=N; i++){
+//    for (int i=0; i<N; i++){
 //        for(int j=0; j<=i; j++){
 //            printf("%.10f\t", D[i][j]);
 //        }
