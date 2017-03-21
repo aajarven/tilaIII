@@ -26,32 +26,39 @@ double fork_1d(double a, double c, double (*f)(double)){
         } else {
             c = x;
         }
+        //printf("x: %f\n", x);
     }
 
     return x;
 }
 
-double* fork_2d(double a, double c, double (*f)(double, double)){
+double* fork_2d(double *a, double *c, double (*f)(double, double)){
     // save given function to global
     f2 = f;
 
     // start from the middle
-    constX = (a+c)/2;
-    constY = (a+c)/2;
+    constX = (a[0]+c[0])/2;
+    constY = (a[1]+c[1])/2;
 
+    //printf("constX: %f\nconstY: %f\n", constX, constY);
+    
     // these are used to check wether we have converged
-    double prevX = 0;
-    double prevY = 0;
+    double prevX = DBL_MAX;
+    double prevY = DBL_MAX;
+    //printf("prevX: %f\nprevY: %f\n", prevX, prevY);
+    //printf("diffX: %f\ndiffY: %f\n", abs(prevX-constX), abs(prevY-constY));
     
     double e = sqrt(DBL_EPSILON);
-    while (abs(prevX-constX) > e || abs(prevY-constY) > e){
+    while (fabs(prevX-constX) > e || fabs(prevY-constY) > e){
         // update previous values to current ones
         prevX = constX;
         prevY = constY;
 
+        //printf("before constX: %f\nconstY: %f\n", constX, constY);
         // calculate new ones
-        constY = fork_1d(a, c, &fy);
-        constX = fork_1d(a, c, &fx);
+        constX = fork_1d(a[0], c[0], &fx);
+        constY = fork_1d(a[1], c[1], &fy);
+        //printf("constX: %f\nconstY: %f\n", constX, constY);
     }
 
     // return when converged
