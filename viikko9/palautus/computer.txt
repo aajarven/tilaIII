@@ -1,0 +1,7 @@
+2&3)	Outputs:
+		2i)  1.000000
+		2ii) -0.002257
+		3i)  1.000000
+		3ii) 0.000404
+	Correlation coefficient and Kendalläs tau for linear data is 1.0 as expected and random data has a coefficient very close to zero for both Pearson and Kendall bas expected.
+
