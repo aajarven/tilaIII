@@ -11,9 +11,10 @@ double df(double x, double y){
 
 double euler(double x, double xf, double y, double h){
     while (x < xf){
-        double dy = df(x, y);
+        double y2 = y + h*df(x, y);
+        double dy2 = df(x+h, y2);
+        y = y+0.5*h*(df(x, y), dy2);
         x = x+h;
-        y = y+h*dy;
     }
 
     return y;
