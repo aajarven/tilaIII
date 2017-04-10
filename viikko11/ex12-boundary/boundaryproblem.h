@@ -1,1 +1,1 @@
-double shooting(double, double, double, double);
+double shooting(double, double, double, double, double,  bool, FILE*);

@@ -5,11 +5,11 @@ all: main
 clean: 
 	rm *.o bin/*
 
-main: main.o boundatyproblem.o
-	gcc $(CFLAGS) -o bin/main main.o boundatyproblem.o -lm
+main: main.o boundaryproblem.o
+	gcc $(CFLAGS) -o bin/main main.o boundaryproblem.o -lm
 
-boundatyproblem.o: boundatyproblem.c boundatyproblem.h
-	gcc $(CFLAGS) -lm -c boundatyproblem.c 
+boundaryproblem.o: boundaryproblem.c boundaryproblem.h
+	gcc $(CFLAGS) -lm -c boundaryproblem.c 
 
 main.o: main.c
 	gcc $(CFLAGS) -c main.c
