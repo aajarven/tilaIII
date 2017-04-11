@@ -54,7 +54,8 @@ void fft(double *data, unsigned int nn, int isign){
                 data[i+1] += tempi;
             }
 
-            wr = (wtemp=wr)*wpr - wi*wpi + wr;
+            wtemp = wr;
+            wr = wr*wpr - wi*wpi + wr;
             wi = wi*wpr + wtemp*wpi + wi;
         }
 
