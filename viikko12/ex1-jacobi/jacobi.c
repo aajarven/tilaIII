@@ -16,9 +16,7 @@ double* jacobi(int N, double *A, double *b, double *x0){
     do{
         for(int i=0; i<N; i++){
             x_prev[i] = x[i];
-            printf("%e\t", x[i]);
         }
-        printf("\n");
 
         for (int i=0; i<N; i++){
             double sigma = 0;
@@ -29,7 +27,7 @@ double* jacobi(int N, double *A, double *b, double *x0){
             }
             x[i] = 1.0/A[i*N+i]*(b[i]-sigma);
         }
-    } while(!doubleArrayEquals(N, x_prev, x, 1e-12));
+    } while(!doubleArrayEquals(N, x_prev, x, 1e-20));
 
     return x;
 
