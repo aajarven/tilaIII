@@ -12,13 +12,6 @@ int main(){
     for(int i=0; i<4; i++){
         A[i*4+i] += A[i*4+i]+w;
     }
-
-
-    printf("x0: [");
-    for(int i=0; i<4; i++){
-        printf("%f\t", x0[i]);
-    }
-    printf("]\n");
     
     double *x = jacobi(4, A, b, x0);
     
