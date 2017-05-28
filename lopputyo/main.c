@@ -30,6 +30,11 @@ int main(int argc, char *argv[]){
 
     readInitialConditions(in, positions, velocities, masses);
 
+    for(int i=0; i<nBodies; i++){
+        printf("%e\t%e\t%e\n", positions[i], velocities[i], masses[i]);
+    }
+
+
     FILE *out;
     out = fopen(argv[7], "w");
     leapfrog(masses, positions, velocities, nBodies, dimensions, step, endTime, outFreq, out);
