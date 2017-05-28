@@ -1,0 +1,9 @@
+*.swp
+*.o
+bin/*
+*.fuse_hidden*
+*~
+*.aux
+*.log
+*.out
+*.synctex.gz
