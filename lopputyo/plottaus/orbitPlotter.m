@@ -1,15 +1,13 @@
-function orbitPlotter(x, y, rotate)
+function orbitPlotter(x, y, rotate, limits)
 
     copyX = x;
     copyY = y;
 
     colors = [255 0 0; 255, 119, 51; 0 0 0]/255;
-    sizes = [40; 20; 100];
+    sizes = [40; 20; 4];
     markers = ['*', 'o', '.'];
     nBodies = 3;
 
-    hold on;
-        
     for i=1:nBodies
         bodyX = copyX(i:nBodies:length(x));
         bodyY = copyY(i:nBodies:length(y));
@@ -28,12 +26,16 @@ function orbitPlotter(x, y, rotate)
         end
         
         scatter(bodyX, bodyY, sizes(i), colors(i,:), markers(i))
+        hold on;
     end
     
     legend('Sun','Jupiter', 'test mass');
     
-    xlim([-1.1 1.1]);
-    ylim([-1.1 1.1]);
+    if limits
+        xlim([-1.1 1.1]);
+        ylim([-1.1 1.1]);
+    end
+    
     pbaspect([1 1 1]);
     hold off;
 end
