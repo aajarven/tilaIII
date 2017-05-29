@@ -1,8 +1,8 @@
 function orbitPlotter(x, y)
 
-    colors = [204 0 153; 255 0 0; 255 204 0]/255;
+    colors = [204 0 153; 255 0 0; 0 0 0]/255;
     colorsRepeated = ones(length(x), 3);
-    sizes = [2; 2; 2];
+    sizes = [20; 5; 2];
     sizesRepeated = ones(length(x), 1);
 
     for i=1:length(x)
@@ -22,9 +22,10 @@ function orbitPlotter(x, y)
     hold on;
     h = zeros(3, 1);
     for i = 1:3
+        colors(i,:)
         h(i) = scatter(NaN, NaN, 20, colors(i,:), 'filled');
     end
-    legend(h, 'Sun','Jupiter','Test mass');
+    legend(h, 'Sun','Jupiter', 'lol');
     hold off;
 end
 
