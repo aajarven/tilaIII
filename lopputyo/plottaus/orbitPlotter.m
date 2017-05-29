@@ -9,16 +9,6 @@ function orbitPlotter(x, y, rotate)
     nBodies = 3;
 
     hold on;
-    
-%     if rotate
-%         for i=1:length(x)/nBodies
-%             rotAngle = -atan2(y((i-1)*nBodies+2), x((i-1)*nBodies+2));
-%             for j=1:nBodies
-%                 copyX(i) = cos(rotAngle)*x((i-1)*nBodies+j) - sin(rotAngle)*y((i-1)*nBodies+j);
-%                 copyY(i) = sin(rotAngle)*x((i-1)*nBodies+j) + cos(rotAngle)*y((i-1)*nBodies+j);
-%             end
-%         end
-%     end
         
     for i=1:nBodies
         bodyX = copyX(i:nBodies:length(x));
