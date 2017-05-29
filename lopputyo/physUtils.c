@@ -142,7 +142,6 @@ double* findCOM(double *pos, double *mass, int nBodies, int dimensions){
         }
         totalMass += mass[i];
     }
-
     dArrMultiply(COM, 1.0/totalMass, dimensions);
     return COM;
 

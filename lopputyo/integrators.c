@@ -42,17 +42,11 @@ void leapfrog(double *masses, double *positions, double *velocities,
 
         calculateAccelerations(a, masses, pos, nBodies, dimensions);
         kick(vel, a, dt/2.0, nBodies, dimensions);
-        for(int i=0; i<nBodies; i++){
-            printf("%e\t%e\t%e\n", pos[i], vel[i], masses[i]);
-        }
+        
         drift(pos, vel, dt, nBodies, dimensions);
         
         calculateAccelerations(a, masses, pos, nBodies, dimensions);
         kick(vel, a, dt/2.0, nBodies, dimensions);
-
-        for(int i=0; i<nBodies; i++){
-            printf("%e\t%e\t%e\n", pos[i], vel[i], masses[i]);
-        }
         
         if(loopNum%outFreq == 0){
             originToCOM(pos, masses, nBodies, dimensions);
