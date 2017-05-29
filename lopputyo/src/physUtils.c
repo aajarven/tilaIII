@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include "arrayUtils.h"
 #include "physUtils.h"
@@ -145,4 +146,27 @@ double* findCOM(double *pos, double *mass, int nBodies, int dimensions){
     dArrMultiply(COM, 1.0/totalMass, dimensions);
     return COM;
 
+}
+
+/**
+ * Rotates the 2D coordinate system to position the nth body to x-axis.
+ *
+ * pos:         Positions of objects
+ * vel:         Velocities of objects
+ * nBodies:     Number of objects
+ * n:           Index of body to be placed on x-axis
+ */
+void rotateFirstToX(double *pos, double *vel, int nBodies, int n){
+    double rotAngle = -atan2(pos[n*2+1], pos[n*2]);
+    for(int i=0; i<nBodies; i++){
+        double newX = cos(rotAngle)*pos[i*2] - sin(rotAngle)*pos[i*2+1];
+        double newY = sin(rotAngle)*pos[i*2] + cos(rotAngle)*pos[i*2+1];
+        pos[i*2] = newX;
+        pos[i*2+1] = newY;
+
+        double newVx = cos(rotAngle)*vel[i] - sin(rotAngle)*vel[i+1];
+        double newVy = sin(rotAngle)*vel[i] + cos(rotAngle)*vel[i+1];
+        vel[i*2] = newVx;
+        vel[i*2+1] = newVy;
+    }
 }
