@@ -3,10 +3,10 @@ CFLAGS = -g -Wall -Wextra -pedantic -std=c99
 all: main
 
 clean:
-	rm *.o bin/*
+	rm *.o ../bin/*
 
 main: main.o integrators.o physUtils.o arrayUtils.o fileio.o
-	gcc $(CFLAGS) -o bin/main main.o integrators.o physUtils.o arrayUtils.o fileio.o -lm
+	gcc $(CFLAGS) -o ../bin/main main.o integrators.o physUtils.o arrayUtils.o fileio.o -lm
 
 main.o: main.c fileio.h integrators.h
 	gcc $(CFLAGS) -c main.c
