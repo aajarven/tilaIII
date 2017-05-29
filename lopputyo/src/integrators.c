@@ -50,6 +50,7 @@ void leapfrog(double *masses, double *positions, double *velocities,
         
         if(loopNum%outFreq == 0){
             originToCOM(pos, masses, nBodies, dimensions);
+//            rotateFirstToX(pos, vel, nBodies, dimensions);
             dumpSim(output, time, pos, vel, nBodies, dimensions);
         }
     }
