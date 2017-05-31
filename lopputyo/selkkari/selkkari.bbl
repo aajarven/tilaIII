@@ -1,0 +1,29 @@
+\begin{thebibliography}{1}
+
+\bibitem{gaia}
+{ESA Science} \& {Technology: GAIA Fact Sheet}.
+\newblock \url{http://sci.esa.int/gaia/47354-fact-sheet/}.
+\newblock Accessed: 30.5.2017.
+
+\bibitem{soho}
+{SOHO's Orbit}.
+\newblock \url{https://sohowww.nascom.nasa.gov/about/orbit.html}.
+\newblock Accessed: 30.5.2017.
+
+\bibitem{dj}
+B.~Gladman and J.~Burns.
+\newblock {\em Planetary Dynamics}.
+\newblock 2011.
+\newblock (draft of a book under preparation, ask for a copy).
+
+\bibitem{tm}
+Hannu Karttunen.
+\newblock {\em Johdatus taivaanmekaniikkaan}.
+\newblock Ursan julkaisuja. Tähtitieteellinen yhdistys Ursa, Helsinki, 2001.
+
+\bibitem{wikifrog}
+Wikipedia.
+\newblock Leapfrog integration, 2017.
+\newblock Accessed 30.5.2017.
+
+\end{thebibliography}
